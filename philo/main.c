@@ -23,17 +23,20 @@ void	*monitor(void *p)
 		i = 0;
 		while (i < philos[0].data->num_philos)
 		{
-			if (is_stop(philos[0].data))
+			if (is_stop(philos[i].data))
 				return (NULL);
-			now = get_time_ms(philos[0].data);
+			pthread_mutex_lock(&philos[i].data->meal_mutex);
+			now = get_time_ms(philos[i].data);
 			if (now - philos[i].last_meal > philos[i].data->time_to_die)
 			{
 				pthread_mutex_lock(&philos[i].data->stop_mutex);
 				philos[i].data->stop = 1;
 				pthread_mutex_unlock(&philos[i].data->stop_mutex);
+				pthread_mutex_unlock(&philos[i].data->meal_mutex);
 				print_status(&philos[i], "died", 1);
 				return (NULL);
 			}
+			pthread_mutex_unlock(&philos[i].data->meal_mutex);
 			i++;
 		}
 		usleep(1000);

@@ -19,7 +19,6 @@ void	init_mutex(t_data *data)
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);
 	if (!data->forks)
 		print_error("Allocation fail\n", data);
-    // memset(data->forks, 0, sizeof(pthread_mutex_t) * data->num_philos);
 	i = 0;
 	while (i < data->num_philos)
     {
@@ -28,6 +27,7 @@ void	init_mutex(t_data *data)
     }
     pthread_mutex_init(&data->stop_mutex, NULL);
     pthread_mutex_init(&data->print_mutex, NULL);
+    pthread_mutex_init(&data->meal_mutex, NULL);
 }
 
 void	init_philo(t_data *data)

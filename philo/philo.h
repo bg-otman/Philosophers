@@ -36,6 +36,7 @@ typedef struct s_data
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	print_mutex;
+	pthread_mutex_t	meal_mutex;
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;

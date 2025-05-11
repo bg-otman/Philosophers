@@ -52,6 +52,10 @@ void	*philo_routine(void *p)
 {
 	t_philo *philo = (t_philo *) p;
 
+	// if (philo->data->num_philos == 1)
+	// {
+
+	// }
 	while (!is_stop(philo->data))
 	{
 		if (philo->id % 2 == 0)
@@ -71,6 +75,11 @@ void	*philo_routine(void *p)
 		print_status(philo, "is eating", 0);
 		smart_sleep(philo->data, philo->data->time_to_eat);
 		philo->meals_eaten++;
+		//
+		pthread_mutex_lock(&philo->data->meal_mutex);
+		philo->last_meal = get_time_ms(philo->data);
+		pthread_mutex_unlock(&philo->data->meal_mutex);
+		//
 		pthread_mutex_unlock(philo->l_fork);
 		pthread_mutex_unlock(philo->r_fork);
 		print_status(philo, "is sleeping", 0);
