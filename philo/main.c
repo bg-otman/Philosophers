@@ -6,76 +6,104 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:24:54 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/10 21:08:30 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:36:41 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+void	stop_simulation(t_data *data)
+{
+	pthread_mutex_lock(&data->stop_mutex);
+	data->stop = 1;
+	pthread_mutex_unlock(&data->stop_mutex);
+}
+
+int	check_death(t_philo *philos, int i, int ate_enough)
+{
+	long	now;
+
+	pthread_mutex_lock(&philos[i].data->meal_mutex);
+	now = get_time_ms(philos[i].data);
+	if (now - philos[i].last_meal > philos[i].data->time_to_die)
+	{
+		stop_simulation(philos[i].data);
+		pthread_mutex_unlock(&philos[i].data->meal_mutex);
+		print_status(&philos[i], "died", 1);
+		return (-2);
+	}
+	if ((philos[i].meals_eaten >= philos->data->meals_required)
+		&& philos->data->meals_required > -1)
+		ate_enough++;
+	pthread_mutex_unlock(&philos[i].data->meal_mutex);
+	return (ate_enough);
+}
+
 void	*monitor(void *p)
 {
 	int		i;
-	long	now;
-	t_philo *philos = (t_philo *) p;
-	
+	int		ate_enough;
+	t_philo	*philos;
+
+	philos = (t_philo *)p;
 	while (1)
 	{
 		i = 0;
-		while (i < philos[0].data->num_philos)
+		ate_enough = 0;
+		while (i < philos->data->num_philos)
 		{
 			if (is_stop(philos[i].data))
 				return (NULL);
-			pthread_mutex_lock(&philos[i].data->meal_mutex);
-			now = get_time_ms(philos[i].data);
-			if (now - philos[i].last_meal > philos[i].data->time_to_die)
-			{
-				pthread_mutex_lock(&philos[i].data->stop_mutex);
-				philos[i].data->stop = 1;
-				pthread_mutex_unlock(&philos[i].data->stop_mutex);
-				pthread_mutex_unlock(&philos[i].data->meal_mutex);
-				print_status(&philos[i], "died", 1);
+			ate_enough = check_death(philos, i, ate_enough);
+			if (ate_enough == -2)
 				return (NULL);
-			}
-			pthread_mutex_unlock(&philos[i].data->meal_mutex);
 			i++;
 		}
-		usleep(1000);
+		if (ate_enough == philos->data->num_philos)
+			stop_simulation(philos->data);
+		usleep(500);
 	}
 	return (NULL);
 }
 
 void	create_threads(t_data *data)
 {
-	int			i;
 	pthread_t	observer;
 
+	int (i), (is_error);
 	i = 0;
 	while (i < data->num_philos)
 	{
-		pthread_create(&data->philos[i].thread, NULL, philo_routine, &data->philos[i]);
-		// usleep(100);
+		is_error = pthread_create(&data->philos[i].thread, NULL, philo_routine,
+				&data->philos[i]);
+		if (is_error)
+			print_error("Failed to create Thread\n", data);
 		i++;
 	}
-	pthread_create(&observer, NULL, monitor, data->philos);
-	pthread_join(observer, NULL);
+	is_error = pthread_create(&observer, NULL, monitor, data->philos);
+	if (is_error)
+		print_error("Failed to create Thread\n", data);
+	is_error = pthread_join(observer, NULL);
+	if (is_error)
+		print_error("Failed to join Thread\n", data);
 	i = 0;
 	while (i < data->num_philos)
 	{
-		pthread_join(data->philos[i].thread, NULL);
-		i++;
+		is_error = pthread_join(data->philos[i++].thread, NULL);
+		if (is_error)
+			print_error("Failed to join Thread\n", data);
 	}
 }
 
-int main(int ac, char *av[])
+int	main(int ac, char *av[])
 {
-    t_data	*data;
+	t_data	*data;
 
 	data = init_data(ac, av);
 	init_mutex(data);
 	init_philo(data);
 	data->start_time = get_time_ms(data);
 	create_threads(data);
-	
 	clear_data(data);
-    return (0);
+	return (0);
 }

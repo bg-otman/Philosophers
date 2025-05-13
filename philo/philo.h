@@ -6,19 +6,19 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:20:34 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/10 21:09:22 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/13 14:35:20 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <unistd.h>
-# include <pthread.h>
 # include <string.h>
 # include <sys/time.h>
+# include <unistd.h>
 
 typedef struct s_philo
 {
@@ -29,7 +29,7 @@ typedef struct s_philo
 	long			last_meal;
 	int				id;
 	int				meals_eaten;
-} t_philo;
+}					t_philo;
 
 typedef struct s_data
 {
@@ -45,23 +45,24 @@ typedef struct s_data
 	int				num_philos;
 	int				meals_required;
 	int				stop;
-} t_data;
+}					t_data;
 
 // helpers
-long	ft_atoi(const char *str);
-void	print_error(char *msg, t_data *data);
-size_t	ft_strlen(const char *s);
-long	get_time_ms(t_data *data);
-void	clear_data(t_data *data);
+long				ft_atoi(const char *str);
+void				print_error(char *msg, t_data *data);
+size_t				ft_strlen(const char *s);
+long				get_time_ms(t_data *data);
+void				clear_data(t_data *data);
 // init
-void	set_args(int ac, char *av[], t_data *data);
-t_data	*init_data(int ac, char *av[]);
-void	init_mutex(t_data *data);
-void	init_philo(t_data *data);
+void				set_args(int ac, char *av[], t_data *data);
+t_data				*init_data(int ac, char *av[]);
+void				init_mutex(t_data *data);
+void				init_philo(t_data *data);
+void				print_status(t_philo *philo, char *msg, int dead);
 // philo
-void	*philo_routine(void *p);
-void	print_status(t_philo *philo, char *msg, int dead);
-void	smart_sleep(t_data *data, long duration);
-int		is_stop(t_data *data);
+void				*philo_routine(void *p);
+void				smart_sleep(t_data *data, long duration);
+void				stop_simulation(t_data *data);
+int					is_stop(t_data *data);
 
 #endif
