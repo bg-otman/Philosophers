@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:29:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 14:35:04 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/13 18:50:01 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ void	smart_sleep(t_data *data, long duration)
 	long	start;
 
 	start = get_time_ms(data);
+	if (start == -1)
+		return ;
 	while ((get_time_ms(data) - start < duration) && !is_stop(data))
 		usleep(500);
 }

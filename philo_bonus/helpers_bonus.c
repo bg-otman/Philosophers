@@ -1,42 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   helpers_funs.c                                     :+:      :+:    :+:   */
+/*   helpers_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/07 12:45:57 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 19:14:30 by obouizi          ###   ########.fr       */
+/*   Created: 2025/05/13 16:33:15 by obouizi           #+#    #+#             */
+/*   Updated: 2025/05/13 19:14:49 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
-long	ft_atoi(const char *str)
+long ft_atoi(const char *str)
 {
-	long		nb;
-	long long	nb_tmp;
-	int			i;
+    long nb;
+    long long nb_tmp;
+    int i;
 
-	nb_tmp = 0;
-	i = 0;
-	while (str && ((str[i] >= 9 && str[i] <= 13) || (str[i] == ' ')))
-		i++;
-	if (str && str[i] == '+')
-		i++;
-	if (!str[i])
-		return (-1);
-	while (str && str[i])
-	{
-		if (!(str[i] >= '0' && str[i] <= '9'))
-			return (-1);
-		if (nb_tmp > (LONG_MAX - (str[i] - '0')) / 10)
-			return (-1);
-		nb_tmp = nb_tmp * 10 + (str[i] - '0');
-		i++;
-	}
-	nb = nb_tmp;
-	return (nb);
+    nb_tmp = 0;
+    i = 0;
+    while (str && ((str[i] >= 9 && str[i] <= 13) || (str[i] == ' ')))
+        i++;
+    if (str && str[i] == '+')
+        i++;
+    if (!str[i])
+		return (print_error("Error\n", NULL), -1);
+    while (str && str[i])
+    {
+        if (!(str[i] >= '0' && str[i] <= '9'))
+            return (print_error("Error\n", NULL), -1);
+        if (nb_tmp > (LONG_MAX - (str[i] - '0')) / 10)
+            return (print_error("Error\n", NULL), -1);
+        nb_tmp = nb_tmp * 10 + (str[i] - '0');
+        i++;
+    }
+    nb = nb_tmp;
+    return (nb);
 }
 
 size_t	ft_strlen(const char *s)
@@ -54,7 +54,7 @@ long	get_time_ms(t_data *data)
 	struct timeval	time;
 
 	if (gettimeofday(&time, NULL) == -1)
-		return (print_error("gettimeofday() error\n", data), -1);
+		print_error("gettimeofday() error\n", data);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
@@ -86,4 +86,5 @@ void	print_error(char *msg, t_data *data)
 {
 	write(2, msg, ft_strlen(msg));
 	clear_data(data);
+	exit(EXIT_FAILURE);
 }

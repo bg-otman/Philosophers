@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:24:54 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 14:36:41 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/13 18:56:24 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,21 +77,21 @@ void	create_threads(t_data *data)
 		is_error = pthread_create(&data->philos[i].thread, NULL, philo_routine,
 				&data->philos[i]);
 		if (is_error)
-			print_error("Failed to create Thread\n", data);
+			return (print_error("Failed to create Thread\n", data));
 		i++;
 	}
 	is_error = pthread_create(&observer, NULL, monitor, data->philos);
 	if (is_error)
-		print_error("Failed to create Thread\n", data);
+		return (print_error("Failed to create Thread\n", data));
 	is_error = pthread_join(observer, NULL);
 	if (is_error)
-		print_error("Failed to join Thread\n", data);
+		return (print_error("Failed to join Thread\n", data));
 	i = 0;
 	while (i < data->num_philos)
 	{
 		is_error = pthread_join(data->philos[i++].thread, NULL);
 		if (is_error)
-			print_error("Failed to join Thread\n", data);
+			return (print_error("Failed to join Thread\n", data));
 	}
 }
 
@@ -100,9 +100,15 @@ int	main(int ac, char *av[])
 	t_data	*data;
 
 	data = init_data(ac, av);
-	init_mutex(data);
-	init_philo(data);
+	if (!data)
+		return (1);
+	if (init_mutex(data) == -1)
+		return (2);
+	if (init_philo(data) == -1)
+		return (3);
 	data->start_time = get_time_ms(data);
+	if (data->start_time == -1)
+		return (5);
 	create_threads(data);
 	clear_data(data);
 	return (0);

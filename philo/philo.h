@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:20:34 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 14:35:20 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/13 20:08:55 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <limits.h>
 # include <sys/time.h>
 # include <unistd.h>
 
@@ -45,6 +46,7 @@ typedef struct s_data
 	int				num_philos;
 	int				meals_required;
 	int				stop;
+	int				init_mutex;// to check mutex is intialised before destroy it
 }					t_data;
 
 // helpers
@@ -54,10 +56,10 @@ size_t				ft_strlen(const char *s);
 long				get_time_ms(t_data *data);
 void				clear_data(t_data *data);
 // init
-void				set_args(int ac, char *av[], t_data *data);
+int					set_args(int ac, char *av[], t_data *data);
 t_data				*init_data(int ac, char *av[]);
-void				init_mutex(t_data *data);
-void				init_philo(t_data *data);
+int					init_mutex(t_data *data);
+int					init_philo(t_data *data);
 void				print_status(t_philo *philo, char *msg, int dead);
 // philo
 void				*philo_routine(void *p);
