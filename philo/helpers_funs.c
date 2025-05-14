@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:45:57 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 19:14:30 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/14 14:04:20 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void	clear_data(t_data *data)
 		pthread_mutex_destroy(&data->stop_mutex);
 		pthread_mutex_destroy(&data->print_mutex);
 		pthread_mutex_destroy(&data->meal_mutex);
+		pthread_mutex_destroy(&data->room);
 	}
 	if (data->philos)
 		free(data->philos);

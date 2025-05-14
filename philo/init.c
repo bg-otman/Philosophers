@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:23:14 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 20:06:50 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:46:26 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int	init_mutex(t_data *data)
 		i++;
 	}
 	is_error = pthread_mutex_init(&data->stop_mutex, NULL);
+	is_error = pthread_mutex_init(&data->room, NULL);
 	if (is_error)
 		return (print_error("mutex init fail\n", data), -1);
 	is_error = pthread_mutex_init(&data->print_mutex, NULL);

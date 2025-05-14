@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:29:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 20:45:43 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:57:22 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	smart_sleep(t_data *data, long duration)
 
 void	take_forks(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->data->room);
 	if (philo->id % 2 == 0)
 	{
 		pthread_mutex_lock(philo->l_fork);
@@ -46,12 +47,12 @@ void	take_forks(t_philo *philo)
 	}
 	else
 	{
-		usleep(100);
 		pthread_mutex_lock(philo->r_fork);
 		print_status(philo, "has taken a fork", 0);
 		pthread_mutex_lock(philo->l_fork);
 		print_status(philo, "has taken a fork", 0);
 	}
+	pthread_mutex_unlock(&philo->data->room);
 }
 
 int	handle_edge_case(t_philo *philo)
