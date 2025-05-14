@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:29:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 18:50:01 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/13 20:45:43 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	take_forks(t_philo *philo)
 	}
 	else
 	{
-		usleep(300);
+		usleep(100);
 		pthread_mutex_lock(philo->r_fork);
 		print_status(philo, "has taken a fork", 0);
 		pthread_mutex_lock(philo->l_fork);

@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:27:07 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 19:15:12 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/14 13:39:51 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <limits.h>
 # include <sys/time.h>
 # include <unistd.h>
+# include <semaphore.h>
 
 typedef struct s_philo
 {
