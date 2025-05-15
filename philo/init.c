@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:23:14 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/14 13:46:26 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:36:40 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 int	init_mutex(t_data *data)
 {
 	int	i;
-	int	is_error;
 
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);
 	if (!data->forks)
@@ -23,20 +22,13 @@ int	init_mutex(t_data *data)
 	i = 0;
 	while (i < data->num_philos)
 	{
-		is_error = pthread_mutex_init(&data->forks[i], NULL);
-		if (is_error)
+		if (pthread_mutex_init(&data->forks[i], NULL))
 			return (print_error("mutex init fail\n", data), -1);
 		i++;
 	}
-	is_error = pthread_mutex_init(&data->stop_mutex, NULL);
-	is_error = pthread_mutex_init(&data->room, NULL);
-	if (is_error)
-		return (print_error("mutex init fail\n", data), -1);
-	is_error = pthread_mutex_init(&data->print_mutex, NULL);
-	if (is_error)
-		return (print_error("mutex init fail\n", data), -1);
-	is_error = pthread_mutex_init(&data->meal_mutex, NULL);
-	if (is_error)
+	if (pthread_mutex_init(&data->stop_mutex, NULL)
+		|| pthread_mutex_init(&data->print_mutex, NULL)
+		|| pthread_mutex_init(&data->meal_mutex, NULL))
 		return (print_error("mutex init fail\n", data), -1);
 	data->init_mutex = 1;
 	return (0);
@@ -86,8 +78,8 @@ int	set_args(int ac, char *av[], t_data *data)
 	if (ac < 5 || ac > 6)
 		return (print_error("Invalid number of args\n", data), -1);
 	data->num_philos = ft_atoi(av[1]);
-	if (data->num_philos <= 0)
-		return (print_error("At least one philo required\n", data), -1);
+	if (data->num_philos <= 0 || data->num_philos >= 100000)
+		return (print_error("Error in philos num\n", data), -1);
 	data->time_to_die = ft_atoi(av[2]);
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
@@ -98,7 +90,7 @@ int	set_args(int ac, char *av[], t_data *data)
 	{
 		data->meals_required = ft_atoi(av[5]);
 		if (data->meals_required <= 0)
-			return (print_error("Need at least one meal\n", data), -1);
+			return (print_error("Error in meals required\n", data), -1);
 	}
 	else
 		data->meals_required = -1;

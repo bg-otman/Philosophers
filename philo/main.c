@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:24:54 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/13 18:56:24 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:32:53 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,33 +66,31 @@ void	*monitor(void *p)
 	return (NULL);
 }
 
-void	create_threads(t_data *data)
+int	create_threads(t_data *data)
 {
+	int			i;
 	pthread_t	observer;
 
-	int (i), (is_error);
 	i = 0;
 	while (i < data->num_philos)
 	{
-		is_error = pthread_create(&data->philos[i].thread, NULL, philo_routine,
-				&data->philos[i]);
-		if (is_error)
-			return (print_error("Failed to create Thread\n", data));
+		if (pthread_create(&data->philos[i].thread, NULL, philo_routine,
+				&data->philos[i]))
+			return (print_error("Failed to create Thread\n", data), -1);
 		i++;
 	}
-	is_error = pthread_create(&observer, NULL, monitor, data->philos);
-	if (is_error)
-		return (print_error("Failed to create Thread\n", data));
-	is_error = pthread_join(observer, NULL);
-	if (is_error)
-		return (print_error("Failed to join Thread\n", data));
+	if (pthread_create(&observer, NULL, monitor, data->philos))
+		return (print_error("Failed to create Thread\n", data), -1);
+	if (pthread_join(observer, NULL))
+		return (print_error("Failed to join Thread\n", data), -1);
 	i = 0;
 	while (i < data->num_philos)
 	{
-		is_error = pthread_join(data->philos[i++].thread, NULL);
-		if (is_error)
-			return (print_error("Failed to join Thread\n", data));
+		if (pthread_join(data->philos[i].thread, NULL))
+			return (print_error("Failed to join Thread\n", data), -1);
+		i++;
 	}
+	return (0);
 }
 
 int	main(int ac, char *av[])
@@ -109,7 +107,8 @@ int	main(int ac, char *av[])
 	data->start_time = get_time_ms(data);
 	if (data->start_time == -1)
 		return (5);
-	create_threads(data);
+	if (create_threads(data))
+		return (6);
 	clear_data(data);
 	return (0);
 }

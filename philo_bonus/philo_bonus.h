@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:27:07 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/14 13:39:51 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:11:20 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@
 # include <string.h>
 # include <limits.h>
 # include <sys/time.h>
+# include <sys/stat.h>
 # include <unistd.h>
+# include <fcntl.h>
 # include <semaphore.h>
+
+# define SEM_NAME "/philo_sem"
 
 typedef struct s_philo
 {
-	pthread_mutex_t	*l_fork;
-	pthread_mutex_t	*r_fork;
+	sem_t			*l_fork;
+	sem_t			*r_fork;
 	struct s_data	*data;
 	pthread_t		thread;
 	long			last_meal;
@@ -35,10 +39,10 @@ typedef struct s_philo
 
 typedef struct s_data
 {
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	stop_mutex;
-	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	meal_mutex;
+	sem_t			*forks;
+	sem_t			stop_mutex;
+	sem_t			print_mutex;
+	sem_t			meal_mutex;
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;

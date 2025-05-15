@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:26:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/14 12:57:47 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 15:18:32 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	main(int ac, char *av[])
 	t_data	*data;
 
 	data = init_data(ac, av);
-	
+
 	init_philo(data);
 	data->start_time = get_time_ms(data);
 	create_threads(data);

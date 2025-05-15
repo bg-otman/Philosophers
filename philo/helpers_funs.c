@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 12:45:57 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/14 14:04:20 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:34:38 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,9 @@
 long	ft_atoi(const char *str)
 {
 	long		nb;
-	long long	nb_tmp;
 	int			i;
 
-	nb_tmp = 0;
+	nb = 0;
 	i = 0;
 	while (str && ((str[i] >= 9 && str[i] <= 13) || (str[i] == ' ')))
 		i++;
@@ -30,12 +29,11 @@ long	ft_atoi(const char *str)
 	{
 		if (!(str[i] >= '0' && str[i] <= '9'))
 			return (-1);
-		if (nb_tmp > (LONG_MAX - (str[i] - '0')) / 10)
+		if (nb > (LONG_MAX - (str[i] - '0')) / 10)
 			return (-1);
-		nb_tmp = nb_tmp * 10 + (str[i] - '0');
+		nb = nb * 10 + (str[i] - '0');
 		i++;
 	}
-	nb = nb_tmp;
 	return (nb);
 }
 
@@ -76,7 +74,6 @@ void	clear_data(t_data *data)
 		pthread_mutex_destroy(&data->stop_mutex);
 		pthread_mutex_destroy(&data->print_mutex);
 		pthread_mutex_destroy(&data->meal_mutex);
-		pthread_mutex_destroy(&data->room);
 	}
 	if (data->philos)
 		free(data->philos);

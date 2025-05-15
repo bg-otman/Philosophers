@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:20:34 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/14 13:43:47 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 16:34:25 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ typedef struct s_data
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	meal_mutex;
-	pthread_mutex_t	room;
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;
