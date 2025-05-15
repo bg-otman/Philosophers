@@ -6,11 +6,29 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:34:16 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 16:18:11 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 20:49:36 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
+
+void	init_semaphores(t_data *data)
+{
+	sem_unlink(SEM_NAME);
+	sem_unlink(SEM_STOP);
+	sem_unlink(SEM_PRINT);
+	sem_unlink(SEM_MEAL);
+	sem_unlink(SEM_ROOM);
+	data->forks = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0644, data->num_philos);
+	data->sem_stop = sem_open(SEM_STOP, O_CREAT | O_EXCL, 0644, 1);
+	data->sem_print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
+	data->sem_meal = sem_open(SEM_MEAL, O_CREAT | O_EXCL, 0644, 1);
+	data->room = sem_open(SEM_ROOM, O_CREAT | O_EXCL, 0644, 1);
+	if (data->forks == SEM_FAILED || data->sem_stop == SEM_FAILED
+		|| data->sem_print == SEM_FAILED || data->sem_meal == SEM_FAILED
+		|| data->room == SEM_FAILED)
+		print_error("open semaphores fails\n", data);
+}
 
 void	init_philo(t_data *data)
 {
@@ -51,7 +69,7 @@ void	set_args(int ac, char *av[], t_data *data)
 	if (ac < 5 || ac > 6)
 		print_error("Invalid number of args\n", data);
 	data->num_philos = ft_atoi(av[1]);
-	if (data->num_philos <= 0)
+	if (data->num_philos <= 0 || data->num_philos >= 100000)
 		print_error("Error in philos num\n", data);
 	data->time_to_die = ft_atoi(av[2]);
 	data->time_to_eat = ft_atoi(av[3]);
@@ -70,12 +88,13 @@ void	print_status(t_philo *philo, char *msg, int dead)
 {
 	long	now;
 	long	elapsed;
+	(void) dead;
 
-	if (!dead && is_stop(philo->data))
-		return ;
+	// if (!dead)
+	// 	return ;
 	now = get_time_ms(philo->data);
 	elapsed = now - philo->data->start_time;
-    // here was mutex
+	sem_wait(philo->data->sem_print);
     printf("%ld %d %s\n", elapsed, philo->id, msg);
-    // here was mutex
+	sem_post(philo->data->sem_print);
 }

@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:27:07 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 16:11:20 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 20:55:34 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,27 +22,33 @@
 # include <sys/stat.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <signal.h>
 # include <semaphore.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 # define SEM_NAME "/philo_sem"
+# define SEM_STOP "/sem_stop"
+# define SEM_PRINT "/sem_print"
+# define SEM_MEAL "/sem_meal"
+# define SEM_ROOM "/sem_room"
 
 typedef struct s_philo
 {
-	sem_t			*l_fork;
-	sem_t			*r_fork;
 	struct s_data	*data;
-	pthread_t		thread;
 	long			last_meal;
 	int				id;
+	pid_t			pid;
 	int				meals_eaten;
 }					t_philo;
 
 typedef struct s_data
 {
 	sem_t			*forks;
-	sem_t			stop_mutex;
-	sem_t			print_mutex;
-	sem_t			meal_mutex;
+	sem_t			*sem_stop;
+	sem_t			*sem_print;
+	sem_t			*sem_meal;
+	sem_t			*room;
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;
@@ -51,7 +57,6 @@ typedef struct s_data
 	int				num_philos;
 	int				meals_required;
 	int				stop;
-	int				init_mutex;
 }					t_data;
 
 // helpers
@@ -63,11 +68,11 @@ void				clear_data(t_data *data);
 // init
 void				set_args(int ac, char *av[], t_data *data);
 t_data				*init_data(int ac, char *av[]);
-void				init_mutex(t_data *data);
+void				init_semaphores(t_data *data);
 void				init_philo(t_data *data);
 void				print_status(t_philo *philo, char *msg, int dead);
 // philo
-void				*philo_routine(void *p);
+void				philo_routine(t_philo *philo);
 void				smart_sleep(t_data *data, long duration);
 void				stop_simulation(t_data *data);
 int					is_stop(t_data *data);

@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:33:15 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 12:07:08 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/15 20:19:06 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,19 +63,16 @@ void	clear_data(t_data *data)
 	i = 0;
 	if (!data)
 		return ;
-	if (data->forks)
-	{
-		while (i < data->num_philos && data->init_mutex)
-			pthread_mutex_destroy(&data->forks[i++]);
-		free(data->forks);
-	}
-	if (data->init_mutex)
-	{
-		pthread_mutex_destroy(&data->stop_mutex);
-		pthread_mutex_destroy(&data->print_mutex);
-		pthread_mutex_destroy(&data->meal_mutex);
-		pthread_mutex_destroy(&data->room);
-	}
+	sem_close(data->forks);
+	sem_unlink(SEM_NAME);
+	sem_close(data->sem_stop);
+	sem_unlink(SEM_STOP);
+	sem_close(data->sem_meal);
+	sem_unlink(SEM_PRINT);
+	sem_close(data->sem_meal);
+	sem_unlink(SEM_MEAL);
+	sem_close(data->room);
+	sem_unlink(SEM_ROOM);
 	if (data->philos)
 		free(data->philos);
 	free(data);

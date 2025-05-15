@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "philo.h": "c",
-        "stat.h": "c"
+        "stat.h": "c",
+        "philo_bonus.h": "c"
     }
 }
