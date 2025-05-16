@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:34:16 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 20:49:36 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/16 20:24:52 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,15 @@
 void	init_semaphores(t_data *data)
 {
 	sem_unlink(SEM_NAME);
-	sem_unlink(SEM_STOP);
 	sem_unlink(SEM_PRINT);
 	sem_unlink(SEM_MEAL);
 	sem_unlink(SEM_ROOM);
 	data->forks = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0644, data->num_philos);
-	data->sem_stop = sem_open(SEM_STOP, O_CREAT | O_EXCL, 0644, 1);
 	data->sem_print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
 	data->sem_meal = sem_open(SEM_MEAL, O_CREAT | O_EXCL, 0644, 1);
 	data->room = sem_open(SEM_ROOM, O_CREAT | O_EXCL, 0644, 1);
-	if (data->forks == SEM_FAILED || data->sem_stop == SEM_FAILED
-		|| data->sem_print == SEM_FAILED || data->sem_meal == SEM_FAILED
-		|| data->room == SEM_FAILED)
+	if (data->forks == SEM_FAILED || data->sem_print == SEM_FAILED
+		|| data->sem_meal == SEM_FAILED || data->room == SEM_FAILED)
 		print_error("open semaphores fails\n", data);
 }
 
@@ -49,21 +46,6 @@ void	init_philo(t_data *data)
 	}
 }
 
-t_data	*init_data(int ac, char *av[])
-{
-	t_data	*data;
-
-	data = malloc(sizeof(t_data));
-	if (!data)
-	{
-		write(2, "Allocation fails!\n", 19);
-		exit(EXIT_FAILURE);
-	}
-	memset(data, 0, sizeof(t_data));
-	set_args(ac, av, data);
-	return (data);
-}
-
 void	set_args(int ac, char *av[], t_data *data)
 {
 	if (ac < 5 || ac > 6)
@@ -74,6 +56,9 @@ void	set_args(int ac, char *av[], t_data *data)
 	data->time_to_die = ft_atoi(av[2]);
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
+	if (data->time_to_die <= -1 || data->time_to_eat <= -1
+		|| data->time_to_sleep <= -1)
+		print_error("Error\n", data);
 	if (ac == 6)
 	{
 		data->meals_required = ft_atoi(av[5]);
@@ -88,13 +73,11 @@ void	print_status(t_philo *philo, char *msg, int dead)
 {
 	long	now;
 	long	elapsed;
-	(void) dead;
 
-	// if (!dead)
-	// 	return ;
 	now = get_time_ms(philo->data);
 	elapsed = now - philo->data->start_time;
 	sem_wait(philo->data->sem_print);
     printf("%ld %d %s\n", elapsed, philo->id, msg);
-	sem_post(philo->data->sem_print);
+	if (!dead)
+		sem_post(philo->data->sem_print);
 }

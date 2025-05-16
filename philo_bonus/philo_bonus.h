@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:27:07 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 20:55:34 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/16 20:25:16 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ long				get_time_ms(t_data *data);
 void				clear_data(t_data *data);
 // init
 void				set_args(int ac, char *av[], t_data *data);
-t_data				*init_data(int ac, char *av[]);
 void				init_semaphores(t_data *data);
 void				init_philo(t_data *data);
 void				print_status(t_philo *philo, char *msg, int dead);
@@ -75,6 +74,5 @@ void				print_status(t_philo *philo, char *msg, int dead);
 void				philo_routine(t_philo *philo);
 void				smart_sleep(t_data *data, long duration);
 void				stop_simulation(t_data *data);
-int					is_stop(t_data *data);
 
 #endif

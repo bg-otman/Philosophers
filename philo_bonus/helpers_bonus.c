@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:33:15 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 20:19:06 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/16 20:24:08 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,13 @@ long	ft_atoi(const char *str)
 	if (str && str[i] == '+')
 		i++;
 	if (!str[i])
-		return (print_error("Error\n", NULL), -1);
+		return (-1);
 	while (str && str[i])
 	{
 		if (!(str[i] >= '0' && str[i] <= '9'))
-			return (print_error("Error\n", NULL), -1);
+			return (-1);
 		if (nb > (LONG_MAX - (str[i] - '0')) / 10)
-			return (print_error("Error\n", NULL), -1);
+			return (-1);
 		nb = nb * 10 + (str[i] - '0');
 		i++;
 	}
@@ -65,8 +65,6 @@ void	clear_data(t_data *data)
 		return ;
 	sem_close(data->forks);
 	sem_unlink(SEM_NAME);
-	sem_close(data->sem_stop);
-	sem_unlink(SEM_STOP);
 	sem_close(data->sem_meal);
 	sem_unlink(SEM_PRINT);
 	sem_close(data->sem_meal);
@@ -75,7 +73,6 @@ void	clear_data(t_data *data)
 	sem_unlink(SEM_ROOM);
 	if (data->philos)
 		free(data->philos);
-	free(data);
 }
 
 void	print_error(char *msg, t_data *data)
