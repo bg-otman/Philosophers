@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:27:07 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/16 20:25:16 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/17 20:38:18 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,17 @@
 # include <semaphore.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+# include <stdbool.h>
 
 # define SEM_NAME "/philo_sem"
 # define SEM_STOP "/sem_stop"
 # define SEM_PRINT "/sem_print"
 # define SEM_MEAL "/sem_meal"
 # define SEM_ROOM "/sem_room"
+
+# define SEM_EXIT "/sem_exit"
+
+
 
 typedef struct s_philo
 {
@@ -46,9 +51,11 @@ typedef struct s_data
 {
 	sem_t			*forks;
 	sem_t			*sem_stop;
+	sem_t			*sem_exit;
 	sem_t			*sem_print;
 	sem_t			*sem_meal;
 	sem_t			*room;
+
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;
@@ -74,5 +81,8 @@ void				print_status(t_philo *philo, char *msg, int dead);
 void				philo_routine(t_philo *philo);
 void				smart_sleep(t_data *data, long duration);
 void				stop_simulation(t_data *data);
+int	check_state(t_data *data);
+void	set_stop(t_data *data);
+
 
 #endif

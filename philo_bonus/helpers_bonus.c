@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:33:15 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/16 20:24:08 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/17 19:49:17 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,19 @@ void	clear_data(t_data *data)
 		return ;
 	sem_close(data->forks);
 	sem_unlink(SEM_NAME);
-	sem_close(data->sem_meal);
+	sem_close(data->sem_print);
 	sem_unlink(SEM_PRINT);
 	sem_close(data->sem_meal);
 	sem_unlink(SEM_MEAL);
 	sem_close(data->room);
 	sem_unlink(SEM_ROOM);
+	sem_close(data->sem_stop);
+	sem_unlink(SEM_STOP);
+	
+	sem_close(data->sem_exit);
+	sem_unlink(SEM_EXIT);
+	
+
 	if (data->philos)
 		free(data->philos);
 }

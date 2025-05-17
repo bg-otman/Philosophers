@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:36:00 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/16 20:23:26 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/17 20:29:45 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	smart_sleep(t_data *data, long duration)
 	long	start;
 
 	start = get_time_ms(data);
-	while ((get_time_ms(data) - start < duration))
+	while ((get_time_ms(data) - start < duration) && !check_state(data))
 		usleep(500);
 }
 
@@ -41,15 +41,37 @@ void	handle_edge_case(t_philo *philo)
 	}
 }
 
-void clean_exit(t_philo *philo, int status)
+void	clean_exit(t_philo *philo, int status)
 {
 	sem_close(philo->data->forks);
 	sem_close(philo->data->sem_meal);
+	sem_close(philo->data->sem_stop);
 	sem_close(philo->data->sem_print);
 	sem_close(philo->data->room);
+
+	sem_close(philo->data->sem_exit);
+
 	if (philo->data->philos)
 		free(philo->data->philos);
 	exit(status);
+}
+
+void	set_stop(t_data *data)
+{
+	sem_wait(data->sem_stop);
+	if (!data->stop)
+		data->stop = 1;
+	sem_post(data->sem_stop);
+}
+
+int	check_state(t_data *data)
+{
+	int	result;
+	
+	sem_wait(data->sem_stop);
+	result = data->stop;
+	sem_post(data->sem_stop);
+	return (result);
 }
 
 void	*monitor_death(void *arg)
@@ -57,21 +79,27 @@ void	*monitor_death(void *arg)
 	t_philo	*philo;
 	long	now;
 
-	philo = (t_philo *) arg;
-	while (1)
+	philo = (t_philo *)arg;
+	while (!check_state(philo->data))
 	{
 		sem_wait(philo->data->sem_meal);
 		now = get_time_ms(philo->data);
 		if (now - philo->last_meal >= philo->data->time_to_die)
 		{
-			print_status(philo, "died", 1);
-			clean_exit(philo, EXIT_FAILURE);
+			if (check_state(philo->data))
+				return (NULL);
+			set_stop(philo->data);
+			sem_post(philo->data->sem_meal);
+			sem_wait(philo->data->sem_print);
+			printf("%ld %d died\n", now - philo->data->start_time, philo->id);
+			return (NULL);
 		}
 		if (philo->meals_eaten >= philo->data->meals_required
 			&& philo->data->meals_required > -1)
 		{
+			set_stop(philo->data);
 			sem_post(philo->data->sem_meal);
-			clean_exit(philo, EXIT_SUCCESS);
+			return (NULL);
 		}
 		sem_post(philo->data->sem_meal);
 		usleep(500);
@@ -81,12 +109,12 @@ void	*monitor_death(void *arg)
 
 void	philo_routine(t_philo *philo)
 {
-	pthread_t	monitor;
+	pthread_t monitor;
 
 	handle_edge_case(philo);
-	pthread_create(&monitor, NULL, monitor_death, philo);
-	pthread_detach(monitor);
-	while (1)
+	if (pthread_create(&monitor, NULL, monitor_death, philo))
+		print_error("thread creation fails\n", philo->data);
+	while (!check_state(philo->data))
 	{
 		take_forks(philo);
 		sem_wait(philo->data->sem_meal);
@@ -103,4 +131,6 @@ void	philo_routine(t_philo *philo)
 		smart_sleep(philo->data, philo->data->time_to_sleep);
 		print_status(philo, "is thinking", 0);
 	}
+	pthread_detach(monitor);
+	clean_exit(philo, EXIT_SUCCESS);
 }
