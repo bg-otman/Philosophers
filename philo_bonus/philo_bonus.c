@@ -25,9 +25,9 @@ void	take_forks(t_philo *philo)
 {
     sem_wait(philo->data->room);
     sem_wait(philo->data->forks);
-    print_status(philo, "has taken a fork", 0);
+    print_status(philo, "has taken a fork");
     sem_wait(philo->data->forks);
-    print_status(philo, "has taken a fork", 0);
+    print_status(philo, "has taken a fork");
     sem_post(philo->data->room);
 }
 
@@ -35,7 +35,7 @@ void	handle_edge_case(t_philo *philo)
 {
 	if (philo->data->num_philos == 1)
 	{
-		print_status(philo, "has taken a fork", 0);
+		print_status(philo, "has taken a fork");
 		usleep(philo->data->time_to_die * 1000);
 		exit(EXIT_SUCCESS);
 	}
@@ -48,9 +48,6 @@ void	clean_exit(t_philo *philo, int status)
 	sem_close(philo->data->sem_stop);
 	sem_close(philo->data->sem_print);
 	sem_close(philo->data->room);
-
-	sem_close(philo->data->sem_exit);
-
 	if (philo->data->philos)
 		free(philo->data->philos);
 	exit(status);
@@ -80,19 +77,15 @@ void	*monitor_death(void *arg)
 	long	now;
 
 	philo = (t_philo *)arg;
-	while (!check_state(philo->data))
+	while (1)
 	{
 		sem_wait(philo->data->sem_meal);
 		now = get_time_ms(philo->data);
 		if (now - philo->last_meal >= philo->data->time_to_die)
 		{
-			if (check_state(philo->data))
-				return (NULL);
 			set_stop(philo->data);
 			sem_post(philo->data->sem_meal);
-			sem_wait(philo->data->sem_print);
-			printf("%ld %d died\n", now - philo->data->start_time, philo->id);
-			return (NULL);
+			return ((void *) 1);
 		}
 		if (philo->meals_eaten >= philo->data->meals_required
 			&& philo->data->meals_required > -1)
@@ -109,7 +102,8 @@ void	*monitor_death(void *arg)
 
 void	philo_routine(t_philo *philo)
 {
-	pthread_t monitor;
+	pthread_t	monitor;
+	void		*res;
 
 	handle_edge_case(philo);
 	if (pthread_create(&monitor, NULL, monitor_death, philo))
@@ -120,17 +114,19 @@ void	philo_routine(t_philo *philo)
 		sem_wait(philo->data->sem_meal);
 		philo->last_meal = get_time_ms(philo->data);
 		sem_post(philo->data->sem_meal);
-		print_status(philo, "is eating", 0);
+		print_status(philo, "is eating");
 		smart_sleep(philo->data, philo->data->time_to_eat);
 		sem_wait(philo->data->sem_meal);
 		philo->meals_eaten++;
 		sem_post(philo->data->sem_meal);
 		sem_post(philo->data->forks);
 		sem_post(philo->data->forks);
-		print_status(philo, "is sleeping", 0);
+		print_status(philo, "is sleeping");
 		smart_sleep(philo->data, philo->data->time_to_sleep);
-		print_status(philo, "is thinking", 0);
+		print_status(philo, "is thinking");
 	}
-	pthread_detach(monitor);
+	pthread_join(monitor, &res);
+	if (res)
+		clean_exit(philo, EXIT_FAILURE);
 	clean_exit(philo, EXIT_SUCCESS);
 }

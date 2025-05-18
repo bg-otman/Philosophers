@@ -29,6 +29,9 @@ int	get_philo_id(t_philo *philos, pid_t pid)
 void	fork_philos(t_data *data)
 {
 	int		i;
+	int		status;
+	pid_t	pid;
+	long	died_time;
 
 	i = 0;
 	while (i < data->num_philos)
@@ -40,8 +43,16 @@ void	fork_philos(t_data *data)
 			philo_routine(&data->philos[i]);
 		i++;
 	}
-	while (waitpid(-1, NULL, 0) > 0)
-		;
+	pid = waitpid(-1, &status, 0);
+	died_time = get_time_ms(data) - data->start_time;
+	if (WIFEXITED(status) && (WEXITSTATUS(status) == EXIT_FAILURE))
+	{
+		sem_wait(data->sem_print);
+		printf("%ld %d %s\n", died_time,
+			get_philo_id(data->philos, pid), "died");
+	}
+	while (waitpid(-1, NULL, 0) > 0);
+		;	
 }
 
 int	main(int ac, char *av[])

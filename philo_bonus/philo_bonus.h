@@ -24,19 +24,13 @@
 # include <fcntl.h>
 # include <signal.h>
 # include <semaphore.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-# include <stdbool.h>
-
+# include <sys/types.h>
+# include <sys/wait.h>
 # define SEM_NAME "/philo_sem"
 # define SEM_STOP "/sem_stop"
 # define SEM_PRINT "/sem_print"
 # define SEM_MEAL "/sem_meal"
 # define SEM_ROOM "/sem_room"
-
-# define SEM_EXIT "/sem_exit"
-
-
 
 typedef struct s_philo
 {
@@ -51,11 +45,9 @@ typedef struct s_data
 {
 	sem_t			*forks;
 	sem_t			*sem_stop;
-	sem_t			*sem_exit;
 	sem_t			*sem_print;
 	sem_t			*sem_meal;
 	sem_t			*room;
-
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;
@@ -68,21 +60,20 @@ typedef struct s_data
 
 // helpers
 long				ft_atoi(const char *str);
-void				print_error(char *msg, t_data *data);
-size_t				ft_strlen(const char *s);
 long				get_time_ms(t_data *data);
+void				print_error(char *msg, t_data *data);
 void				clear_data(t_data *data);
+size_t				ft_strlen(const char *s);
 // init
 void				set_args(int ac, char *av[], t_data *data);
 void				init_semaphores(t_data *data);
 void				init_philo(t_data *data);
-void				print_status(t_philo *philo, char *msg, int dead);
+void				print_status(t_philo *philo, char *msg);
 // philo
 void				philo_routine(t_philo *philo);
 void				smart_sleep(t_data *data, long duration);
 void				stop_simulation(t_data *data);
-int	check_state(t_data *data);
-void	set_stop(t_data *data);
-
+void				set_stop(t_data *data);
+int					check_state(t_data *data);
 
 #endif

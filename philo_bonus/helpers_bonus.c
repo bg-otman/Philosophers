@@ -58,9 +58,6 @@ long	get_time_ms(t_data *data)
 
 void	clear_data(t_data *data)
 {
-	int	i;
-
-	i = 0;
 	if (!data)
 		return ;
 	sem_close(data->forks);
@@ -73,11 +70,6 @@ void	clear_data(t_data *data)
 	sem_unlink(SEM_ROOM);
 	sem_close(data->sem_stop);
 	sem_unlink(SEM_STOP);
-	
-	sem_close(data->sem_exit);
-	sem_unlink(SEM_EXIT);
-	
-
 	if (data->philos)
 		free(data->philos);
 }

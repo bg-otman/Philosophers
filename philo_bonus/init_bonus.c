@@ -19,10 +19,6 @@ void	init_semaphores(t_data *data)
 	sem_unlink(SEM_PRINT);
 	sem_unlink(SEM_MEAL);
 	sem_unlink(SEM_ROOM);
-	
-	sem_unlink(SEM_EXIT);
-	data->sem_exit = sem_open(SEM_EXIT, O_CREAT | O_EXCL, 0644, 0);
-	
 	data->forks = sem_open(SEM_NAME, O_CREAT | O_EXCL, 0644, data->num_philos);
 	data->sem_stop = sem_open(SEM_STOP, O_CREAT | O_EXCL, 0644, 1);
 	data->sem_print = sem_open(SEM_PRINT, O_CREAT | O_EXCL, 0644, 1);
@@ -41,7 +37,7 @@ void	init_philo(t_data *data)
 	data->philos = malloc(sizeof(t_philo) * data->num_philos);
 	if (!data->philos)
 		print_error("Allocation fail\n", data);
-	memset(data->philos, 0, sizeof(t_philo));
+	memset(data->philos, 0, sizeof(t_philo) * data->num_philos);
 	i = 0;
 	while (i < data->num_philos)
 	{
@@ -76,14 +72,13 @@ void	set_args(int ac, char *av[], t_data *data)
 		data->meals_required = -1;
 }
 
-void	print_status(t_philo *philo, char *msg, int dead)
+void	print_status(t_philo *philo, char *msg)
 {
 	long	now;
 	long	elapsed;
-	(void) dead;
 
 	if (check_state(philo->data))
-		return ;
+		return;
 	now = get_time_ms(philo->data);
 	elapsed = now - philo->data->start_time;
 	sem_wait(philo->data->sem_print);
