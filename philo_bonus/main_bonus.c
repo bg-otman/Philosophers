@@ -26,6 +26,27 @@ int	get_philo_id(t_philo *philos, pid_t pid)
 	return (0);
 }
 
+void	smart_sleep(t_data *data, long duration)
+{
+	long	start;
+
+	start = get_time_ms(data);
+	while ((get_time_ms(data) - start < duration) && !check_state(data))
+		usleep(500);
+}
+
+void	clean_exit(t_philo *philo, int status)
+{
+	sem_close(philo->data->forks);
+	sem_close(philo->data->sem_meal);
+	sem_close(philo->data->sem_stop);
+	sem_close(philo->data->sem_print);
+	sem_close(philo->data->room);
+	if (philo->data->philos)
+		free(philo->data->philos);
+	exit(status);
+}
+
 void	fork_philos(t_data *data)
 {
 	int		i;

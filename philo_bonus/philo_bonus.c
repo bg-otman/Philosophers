@@ -12,15 +12,6 @@
 
 #include "philo_bonus.h"
 
-void	smart_sleep(t_data *data, long duration)
-{
-	long	start;
-
-	start = get_time_ms(data);
-	while ((get_time_ms(data) - start < duration) && !check_state(data))
-		usleep(500);
-}
-
 void	take_forks(t_philo *philo)
 {
     sem_wait(philo->data->room);
@@ -29,28 +20,6 @@ void	take_forks(t_philo *philo)
     sem_wait(philo->data->forks);
     print_status(philo, "has taken a fork");
     sem_post(philo->data->room);
-}
-
-void	handle_edge_case(t_philo *philo)
-{
-	if (philo->data->num_philos == 1)
-	{
-		print_status(philo, "has taken a fork");
-		usleep(philo->data->time_to_die * 1000);
-		exit(EXIT_SUCCESS);
-	}
-}
-
-void	clean_exit(t_philo *philo, int status)
-{
-	sem_close(philo->data->forks);
-	sem_close(philo->data->sem_meal);
-	sem_close(philo->data->sem_stop);
-	sem_close(philo->data->sem_print);
-	sem_close(philo->data->room);
-	if (philo->data->philos)
-		free(philo->data->philos);
-	exit(status);
 }
 
 void	set_stop(t_data *data)
@@ -71,7 +40,7 @@ int	check_state(t_data *data)
 	return (result);
 }
 
-void	*monitor_death(void *arg)
+void	*monitor(void *arg)
 {
 	t_philo	*philo;
 	long	now;
@@ -102,12 +71,10 @@ void	*monitor_death(void *arg)
 
 void	philo_routine(t_philo *philo)
 {
-	pthread_t	monitor;
+	pthread_t	th;
 	void		*res;
 
-	handle_edge_case(philo);
-	if (pthread_create(&monitor, NULL, monitor_death, philo))
-		print_error("thread creation fails\n", philo->data);
+	th = call_monitor(philo, monitor);
 	while (!check_state(philo->data))
 	{
 		take_forks(philo);
@@ -125,7 +92,7 @@ void	philo_routine(t_philo *philo)
 		smart_sleep(philo->data, philo->data->time_to_sleep);
 		print_status(philo, "is thinking");
 	}
-	pthread_join(monitor, &res);
+	pthread_join(th, &res);
 	if (res)
 		clean_exit(philo, EXIT_FAILURE);
 	clean_exit(philo, EXIT_SUCCESS);

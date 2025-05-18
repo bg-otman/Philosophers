@@ -58,6 +58,8 @@ typedef struct s_data
 	int				stop;
 }					t_data;
 
+// main
+void				clean_exit(t_philo *philo, int status);
 // helpers
 long				ft_atoi(const char *str);
 long				get_time_ms(t_data *data);
@@ -69,11 +71,13 @@ void				set_args(int ac, char *av[], t_data *data);
 void				init_semaphores(t_data *data);
 void				init_philo(t_data *data);
 void				print_status(t_philo *philo, char *msg);
+pthread_t			call_monitor(t_philo *philo, void *monitor(void *));
 // philo
 void				philo_routine(t_philo *philo);
 void				smart_sleep(t_data *data, long duration);
 void				stop_simulation(t_data *data);
 void				set_stop(t_data *data);
+void				*monitor(void *arg);
 int					check_state(t_data *data);
 
 #endif

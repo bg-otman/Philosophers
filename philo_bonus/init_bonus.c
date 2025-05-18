@@ -72,17 +72,31 @@ void	set_args(int ac, char *av[], t_data *data)
 		data->meals_required = -1;
 }
 
+pthread_t	call_monitor(t_philo *philo, void *monitor(void *))
+{
+	pthread_t	thread;
+
+	if (philo->data->num_philos == 1)
+	{
+		print_status(philo, "has taken a fork");
+		usleep(philo->data->time_to_die * 1000);
+		exit(EXIT_SUCCESS);
+	}
+	if (pthread_create(&thread, NULL, monitor, philo))
+		print_error("thread creation fails\n", philo->data);
+	return (thread);
+}
+
 void	print_status(t_philo *philo, char *msg)
 {
 	long	now;
 	long	elapsed;
 
 	if (check_state(philo->data))
-		return;
+		return ;
 	now = get_time_ms(philo->data);
 	elapsed = now - philo->data->start_time;
 	sem_wait(philo->data->sem_print);
 	printf("%ld %d %s\n", elapsed, philo->id, msg);
 	sem_post(philo->data->sem_print);
 }
-
