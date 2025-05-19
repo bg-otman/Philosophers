@@ -14,8 +14,8 @@
 
 long	ft_atoi(const char *str)
 {
-	long		nb;
-	int			i;
+	long	nb;
+	int		i;
 
 	nb = 0;
 	i = 0;

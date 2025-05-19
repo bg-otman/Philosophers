@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:36:00 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/17 20:29:45 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/19 20:46:34 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 void	take_forks(t_philo *philo)
 {
-    sem_wait(philo->data->room);
-    sem_wait(philo->data->forks);
-    print_status(philo, "has taken a fork");
-    sem_wait(philo->data->forks);
-    print_status(philo, "has taken a fork");
-    sem_post(philo->data->room);
+	sem_wait(philo->data->room);
+	sem_wait(philo->data->forks);
+	print_status(philo, "has taken a fork");
+	sem_wait(philo->data->forks);
+	print_status(philo, "has taken a fork");
+	sem_post(philo->data->room);
 }
 
 void	set_stop(t_data *data)
@@ -32,12 +32,12 @@ void	set_stop(t_data *data)
 
 int	check_state(t_data *data)
 {
-	int	result;
-	
+	int	res;
+
 	sem_wait(data->sem_stop);
-	result = data->stop;
+	res = data->stop;
 	sem_post(data->sem_stop);
-	return (result);
+	return (res);
 }
 
 void	*monitor(void *arg)
@@ -54,7 +54,7 @@ void	*monitor(void *arg)
 		{
 			set_stop(philo->data);
 			sem_post(philo->data->sem_meal);
-			return ((void *) 1);
+			return ((void *)1);
 		}
 		if (philo->meals_eaten >= philo->data->meals_required
 			&& philo->data->meals_required > -1)

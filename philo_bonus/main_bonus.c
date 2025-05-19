@@ -6,15 +6,24 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 16:26:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/17 18:46:59 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/19 20:46:38 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+void	smart_sleep(t_data *data, long duration)
+{
+	long	start;
+
+	start = get_time_ms(data);
+	while ((get_time_ms(data) - start < duration) && !check_state(data))
+		usleep(500);
+}
+
 int	get_philo_id(t_philo *philos, pid_t pid)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < philos->data->num_philos)
@@ -26,33 +35,36 @@ int	get_philo_id(t_philo *philos, pid_t pid)
 	return (0);
 }
 
-void	smart_sleep(t_data *data, long duration)
-{
-	long	start;
-
-	start = get_time_ms(data);
-	while ((get_time_ms(data) - start < duration) && !check_state(data))
-		usleep(500);
-}
-
-void	clean_exit(t_philo *philo, int status)
-{
-	sem_close(philo->data->forks);
-	sem_close(philo->data->sem_meal);
-	sem_close(philo->data->sem_stop);
-	sem_close(philo->data->sem_print);
-	sem_close(philo->data->room);
-	if (philo->data->philos)
-		free(philo->data->philos);
-	exit(status);
-}
-
-void	fork_philos(t_data *data)
+void	wait_for_children(t_data *data)
 {
 	int		i;
 	int		status;
 	pid_t	pid;
 	long	died_time;
+
+	pid = 1;
+	i = 0;
+	while (pid > 0)
+	{
+		pid = waitpid(-1, &status, 0);
+		died_time = get_time_ms(data) - data->start_time;
+		if (WIFEXITED(status) && (WEXITSTATUS(status) == EXIT_FAILURE))
+		{
+			sem_wait(data->sem_print);
+			printf("%ld %d %s\n", died_time, get_philo_id(data->philos, pid),
+				"died");
+			while (i < data->num_philos)
+				kill(data->philos[i++].pid, SIGKILL);
+			break ;
+		}
+	}
+	while (waitpid(-1, NULL, 0) > 0)
+		;
+}
+
+void	fork_philos(t_data *data)
+{
+	int	i;
 
 	i = 0;
 	while (i < data->num_philos)
@@ -64,16 +76,7 @@ void	fork_philos(t_data *data)
 			philo_routine(&data->philos[i]);
 		i++;
 	}
-	pid = waitpid(-1, &status, 0);
-	died_time = get_time_ms(data) - data->start_time;
-	if (WIFEXITED(status) && (WEXITSTATUS(status) == EXIT_FAILURE))
-	{
-		sem_wait(data->sem_print);
-		printf("%ld %d %s\n", died_time,
-			get_philo_id(data->philos, pid), "died");
-	}
-	while (waitpid(-1, NULL, 0) > 0);
-		;	
+	wait_for_children(data);
 }
 
 int	main(int ac, char *av[])
