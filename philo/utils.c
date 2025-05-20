@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:17:25 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/20 13:19:14 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/20 15:38:17 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,20 @@ int	is_my_turn(t_philo *philo)
 	t_philo	*other;
 
 	i = 0;
+	pthread_mutex_lock(&philo->data->meal_mutex);
 	my_deadline = philo->last_meal + philo->data->time_to_die;
 	while (i < philo->data->num_philos)
 	{
 		other = &philo->data->philos[i];
 		other_deadline = other->last_meal + philo->data->time_to_die;
 		if (other_deadline < my_deadline)
+		{
+			pthread_mutex_unlock(&philo->data->meal_mutex);
 			return (0);
+		}
 		i++;
 	}
+	pthread_mutex_unlock(&philo->data->meal_mutex);
 	return (1);
 }
 
