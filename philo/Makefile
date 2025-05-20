@@ -1,6 +1,6 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
-SRC = main.c philo.c helpers_funs.c init.c
+SRC = main.c philo.c helpers_funs.c init.c utils.c
 OBJ = $(SRC:.c=.o)
 NAME = philo
 

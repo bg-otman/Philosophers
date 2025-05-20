@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:29:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 16:42:47 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/20 13:23:57 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,25 +35,6 @@ void	smart_sleep(t_data *data, long duration)
 		usleep(500);
 }
 
-void	take_forks(t_philo *philo)
-{
-	if (philo->id % 2 == 0)
-	{
-		pthread_mutex_lock(philo->l_fork);
-		print_status(philo, "has taken a fork", 0);
-		pthread_mutex_lock(philo->r_fork);
-		print_status(philo, "has taken a fork", 0);
-	}
-	else
-	{
-		usleep(300);
-		pthread_mutex_lock(philo->r_fork);
-		print_status(philo, "has taken a fork", 0);
-		pthread_mutex_lock(philo->l_fork);
-		print_status(philo, "has taken a fork", 0);
-	}
-}
-
 int	handle_edge_case(t_philo *philo)
 {
 	if (philo->data->num_philos == 1)
@@ -65,6 +46,24 @@ int	handle_edge_case(t_philo *philo)
 	return (0);
 }
 
+void	take_forks(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->l_fork);
+		print_status(philo, "has taken a fork", 0);
+		pthread_mutex_lock(philo->r_fork);
+		print_status(philo, "has taken a fork", 0);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->r_fork);
+		print_status(philo, "has taken a fork", 0);
+		pthread_mutex_lock(philo->l_fork);
+		print_status(philo, "has taken a fork", 0);
+	}
+}
+
 void	*philo_routine(void *p)
 {
 	t_philo	*philo;
@@ -74,7 +73,7 @@ void	*philo_routine(void *p)
 		return (NULL);
 	while (!is_stop(philo->data))
 	{
-		take_forks(philo);
+		safe_take_forks(philo);
 		pthread_mutex_lock(&philo->data->meal_mutex);
 		philo->last_meal = get_time_ms(philo->data);
 		pthread_mutex_unlock(&philo->data->meal_mutex);

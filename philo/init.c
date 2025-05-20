@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:23:14 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 16:36:40 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/20 12:50:33 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ int	init_mutex(t_data *data)
 	}
 	if (pthread_mutex_init(&data->stop_mutex, NULL)
 		|| pthread_mutex_init(&data->print_mutex, NULL)
-		|| pthread_mutex_init(&data->meal_mutex, NULL))
+		|| pthread_mutex_init(&data->meal_mutex, NULL)
+		|| pthread_mutex_init(&data->priority_mutex, NULL))
 		return (print_error("mutex init fail\n", data), -1);
 	data->init_mutex = 1;
 	return (0);

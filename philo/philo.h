@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:20:34 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/15 16:34:25 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/20 13:24:22 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_data
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	meal_mutex;
+	pthread_mutex_t	priority_mutex;
 	t_philo			*philos;
 	long			time_to_die;
 	long			time_to_eat;
@@ -65,6 +66,9 @@ void				print_status(t_philo *philo, char *msg, int dead);
 void				*philo_routine(void *p);
 void				smart_sleep(t_data *data, long duration);
 void				stop_simulation(t_data *data);
+void				take_forks(t_philo *philo);
 int					is_stop(t_data *data);
+// utils
+void				safe_take_forks(t_philo *philo);
 
 #endif
