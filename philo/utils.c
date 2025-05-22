@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 13:17:25 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/20 15:38:17 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/22 17:22:12 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ void	safe_take_forks(t_philo *philo)
 		pthread_mutex_lock(&philo->data->priority_mutex);
 		if (is_my_turn(philo))
 		{
-			pthread_mutex_unlock(&philo->data->priority_mutex);
 			take_forks(philo);
+			pthread_mutex_unlock(&philo->data->priority_mutex);
 			break ;
 		}
 		pthread_mutex_unlock(&philo->data->priority_mutex);
