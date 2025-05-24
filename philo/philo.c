@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:29:02 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/20 13:23:57 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/24 15:33:52 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	take_forks(t_philo *philo)
 	}
 	else
 	{
+		usleep(300);
 		pthread_mutex_lock(philo->r_fork);
 		print_status(philo, "has taken a fork", 0);
 		pthread_mutex_lock(philo->l_fork);
@@ -73,17 +74,7 @@ void	*philo_routine(void *p)
 		return (NULL);
 	while (!is_stop(philo->data))
 	{
-		safe_take_forks(philo);
-		pthread_mutex_lock(&philo->data->meal_mutex);
-		philo->last_meal = get_time_ms(philo->data);
-		pthread_mutex_unlock(&philo->data->meal_mutex);
-		print_status(philo, "is eating", 0);
-		smart_sleep(philo->data, philo->data->time_to_eat);
-		pthread_mutex_lock(&philo->data->meal_mutex);
-		philo->meals_eaten++;
-		pthread_mutex_unlock(&philo->data->meal_mutex);
-		pthread_mutex_unlock(philo->l_fork);
-		pthread_mutex_unlock(philo->r_fork);
+		safe_eat(philo);
 		print_status(philo, "is sleeping", 0);
 		smart_sleep(philo->data, philo->data->time_to_sleep);
 		print_status(philo, "is thinking", 0);

@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 19:56:54 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/20 13:55:19 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/24 15:51:03 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ pthread_t	call_monitor(t_philo *philo, void *monitor(void *))
 	{
 		print_status(philo, "has taken a fork");
 		usleep(philo->data->time_to_die * 1000);
-		exit(EXIT_SUCCESS);
+		exit(EXIT_FAILURE);
 	}
 	if (pthread_create(&thread, NULL, monitor, philo))
 		print_error("thread creation fails\n", philo->data);

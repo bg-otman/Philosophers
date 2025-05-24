@@ -6,7 +6,7 @@
 /*   By: obouizi <obouizi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 18:20:34 by obouizi           #+#    #+#             */
-/*   Updated: 2025/05/20 13:24:22 by obouizi          ###   ########.fr       */
+/*   Updated: 2025/05/24 15:22:15 by obouizi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,6 @@ void				stop_simulation(t_data *data);
 void				take_forks(t_philo *philo);
 int					is_stop(t_data *data);
 // utils
-void				safe_take_forks(t_philo *philo);
+void				safe_eat(t_philo *philo);
 
 #endif
